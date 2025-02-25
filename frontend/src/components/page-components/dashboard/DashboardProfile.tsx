@@ -101,15 +101,6 @@ const DashboardProfile = () => {
                       className="bg-gray-50 dark:bg-neutral-900"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      value={editedData.email}
-                      disabled
-                      className="bg-gray-50 dark:bg-neutral-900"
-                    />
-                  </div>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setIsEditing(false)}>
@@ -131,10 +122,6 @@ const DashboardProfile = () => {
                 <div>
                   <Label className="text-sm text-gray-500 dark:text-gray-400">Display Name</Label>
                   <p className="mt-1 text-black dark:text-white">{profile.displayName}</p>
-                </div>
-                <div>
-                  <Label className="text-sm text-gray-500 dark:text-gray-400">Email</Label>
-                  <p className="mt-1 text-black dark:text-white">{profile.email}</p>
                 </div>
               </div>
             )}
