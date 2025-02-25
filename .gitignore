@@ -34,3 +34,8 @@
 
 
 node_modules
+.github/*
+
+frontend/dist/*
+
+shared/dist/* 
