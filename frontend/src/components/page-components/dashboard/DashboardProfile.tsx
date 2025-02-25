@@ -21,13 +21,13 @@ const DashboardProfile = () => {
     <div className="max-w-4xl space-y-12">
       {/* General Section */}
       <section>
-        <h2 className="text-xl font-semibold mb-6">General</h2>
+        <h2 className="text-xl font-semibold mb-6 text-black dark:text-white">General</h2>
         
         {/* Appearance */}
         <div className="bg-white dark:bg-neutral-950 rounded-lg border border-gray-200 dark:border-neutral-800 p-4 mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium">Appearance</h3>
+              <h3 className="font-medium text-black dark:text-white">Appearance</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Set your preferred theme for ComponentCraft
               </p>
@@ -49,7 +49,7 @@ const DashboardProfile = () => {
         <div className="bg-white dark:bg-neutral-950 rounded-lg border border-gray-200 dark:border-neutral-800 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium">Language</h3>
+              <h3 className="font-medium text-black dark:text-white">Language</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Set your preferred language for ComponentCraft's interface
               </p>
@@ -70,14 +70,14 @@ const DashboardProfile = () => {
 
       {/* Account Section */}
       <section>
-        <h2 className="text-xl font-semibold mb-6">Account</h2>
+        <h2 className="text-xl font-semibold mb-6 text-black dark:text-white">Account</h2>
         
         <div className="bg-white dark:bg-neutral-950 rounded-lg border border-gray-200 dark:border-neutral-800 p-6 space-y-6">
           {/* Profile Info */}
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-medium">Profile Information</h3>
+                <h3 className="font-medium text-black dark:text-white">Profile Information</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Update your account's profile information
                 </p>
@@ -130,11 +130,11 @@ const DashboardProfile = () => {
               <div className="grid grid-cols-2 gap-4 pt-4">
                 <div>
                   <Label className="text-sm text-gray-500 dark:text-gray-400">Display Name</Label>
-                  <p className="mt-1">{profile.displayName}</p>
+                  <p className="mt-1 text-black dark:text-white">{profile.displayName}</p>
                 </div>
                 <div>
                   <Label className="text-sm text-gray-500 dark:text-gray-400">Email</Label>
-                  <p className="mt-1">{profile.email}</p>
+                  <p className="mt-1 text-black dark:text-white">{profile.email}</p>
                 </div>
               </div>
             )}
@@ -144,7 +144,7 @@ const DashboardProfile = () => {
           <div className="pt-6 border-t border-gray-200 dark:border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-medium">AI Data Usage</h3>
+                <h3 className="font-medium text-black dark:text-white">AI Data Usage</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Allow us to use your search data to improve our AI models
                 </p>

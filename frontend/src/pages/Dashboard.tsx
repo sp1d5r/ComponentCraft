@@ -92,7 +92,7 @@ const Dashboard: React.FC = () => {
           {/* Logo */}
           <div className="flex items-center gap-3 mb-8">
             <div className="h-8 w-8 bg-black dark:bg-white rounded-lg" />
-            <span className="text-lg font-medium">ComponentCraft</span>
+            <span className="text-lg font-medium text-black dark:text-white">ComponentCraft</span>
           </div>
 
           {/* Navigation */}
@@ -117,12 +117,12 @@ const Dashboard: React.FC = () => {
 
           {/* Credits Section */}
           <div className="border-t border-gray-200 pt-6 mt-6">
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium">Credits Remaining</span>
-                <IconBolt className="h-4 w-4" />
+                <span className="text-sm font-medium text-black dark:text-white">Credits Remaining</span>
+                <IconBolt className="h-4 w-4 text-black dark:text-white" />
               </div>
-              <div className="text-2xl font-bold mb-2">2,450</div>
+              <div className="text-2xl font-bold text-black dark:text-white mb-2">2,450</div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div className="bg-black h-2 rounded-full" style={{ width: '70%' }} />
               </div>
@@ -155,7 +155,7 @@ const Dashboard: React.FC = () => {
       <div className="flex-1 overflow-auto">
         <header className="sticky top-0 z-10 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm border-b border-gray-200 dark:border-neutral-800">
           <div className="flex items-center justify-between px-6 h-16">
-            <h1 className="text-xl font-medium">{getPageTitle(activeContent)}</h1>
+            <h1 className="text-xl font-medium text-black dark:text-white">{getPageTitle(activeContent)}</h1>
             <div className="flex items-center gap-3">
               <Button variant="outline" onClick={() => window.open('/docs', '_blank')}>
                 Documentation
