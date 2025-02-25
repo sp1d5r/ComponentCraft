@@ -65,10 +65,40 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        'slide-left': {
+          '0%': { transform: 'translateX(0) rotate(12deg)' },
+          '100%': { transform: 'translateX(-100%) rotate(12deg)' },
+        },
+        'slide-right': {
+          '0%': { transform: 'translateX(-100%) rotate(12deg)' },
+          '100%': { transform: 'translateX(0) rotate(12deg)' },
+        },
+        'slide-up': {
+          '0%, 100%': { transform: 'translateY(5%)' },
+          '50%': { transform: 'translateY(-5%)' },
+        },
+        'slide-down': {
+          '0%, 100%': { transform: 'translateY(-5%)' },
+          '50%': { transform: 'translateY(5%)' },
+        },
+        'slide-up-right': {
+          '0%': { transform: 'translate(-50%, 100%) rotate(12deg)' },
+          '100%': { transform: 'translate(100%, -100%) rotate(12deg)' },
+        },
+        'slide-down-left': {
+          '0%': { transform: 'translate(100%, -100%) rotate(12deg)' },
+          '100%': { transform: 'translate(-100%, 100%) rotate(12deg)' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        'slide-left': 'slide-left 25s linear infinite',
+        'slide-right': 'slide-right 25s linear infinite',
+        'slide-up': 'slide-up 15s ease-in-out infinite',
+        'slide-down': 'slide-down 15s ease-in-out infinite',
+        'slide-up-right': 'slide-up-right 25s linear infinite',
+        'slide-down-left': 'slide-down-left 25s linear infinite',
       },
     },
   },
