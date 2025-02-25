@@ -116,18 +116,18 @@ const Dashboard: React.FC = () => {
           </nav>
 
           {/* Credits Section */}
-          <div className="border-t border-gray-200 dark:border-neutral-800 pt-6 mt-6">
-            <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4">
+          <div className="border-t border-gray-200 pt-6 mt-6">
+            <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium">Credits Remaining</span>
                 <IconBolt className="h-4 w-4" />
               </div>
               <div className="text-2xl font-bold mb-2">2,450</div>
-              <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
-                <div className="bg-black dark:bg-white h-2 rounded-full" style={{ width: '70%' }} />
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-black h-2 rounded-full" style={{ width: '70%' }} />
               </div>
               <Button 
-                className="w-full mt-3 bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                className="w-full mt-3 bg-black text-white hover:bg-gray-800"
                 onClick={() => navigate('/billing')}
               >
                 Add Credits
