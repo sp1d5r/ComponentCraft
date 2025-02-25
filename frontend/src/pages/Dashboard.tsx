@@ -1,32 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "../components/aceturnity/sidebar";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { cn } from "../lib/utils";
 import {
   IconHome,
   IconUser,
   IconSettings,
   IconLogout,
+  IconCreditCard,
+  IconBolt,
 } from "@tabler/icons-react";
-import { motion } from "framer-motion";
-import { cn } from "../lib/utils";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { Button } from "../components/shadcn/button";
 import { Moon, Sun } from "lucide-react";
+import { Button } from "../components/shadcn/button";
 import { useDarkMode } from "../contexts/DarkModeProvider";
-import { DashboardMain } from "../components/page-components/dashboard/DashboardMain";
 import { AuthStatus, useAuth } from "../contexts/AuthenticationProvider";
 import { ProfileStatus, useProfile } from "../contexts/ProfileProvider";
-import DashboardProfile from "../components/page-components/dashboard/DashboardProfile";
 import { useToast } from "../contexts/ToastProvider";
+import { DashboardMain } from "../components/page-components/dashboard/DashboardMain";
+import DashboardProfile from "../components/page-components/dashboard/DashboardProfile";
 
 const Dashboard: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const {darkModeState, toggleDarkMode} = useDarkMode();
+  const { darkModeState, toggleDarkMode } = useDarkMode();
   const [activeContent, setActiveContent] = useState<string>("home");
   const { authState, logout } = useAuth();
-  const { status: profileStatus, profile} = useProfile();
-  const {toast} = useToast();
+  const { status: profileStatus, profile } = useProfile();
+  const { toast } = useToast();
 
   useEffect(() => {
     const sessionId = new URLSearchParams(window.location.search).get('session_id');
@@ -76,107 +77,139 @@ const Dashboard: React.FC = () => {
     }
   }, [authState, profileStatus, navigate]);
 
-  const handleLinkClick = (id: string) => {
-    navigate(`?content=${id}`);
-  };
-
   return (
-    <div className={cn(
-      "rounded-md flex flex-col md:flex-row bg-white dark:bg-neutral-950 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden px-1 py-1",
-      "h-screen"
-    )}>
-      <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10 bg-gray-100 dark:bg-gray-800 rounded-l-xl">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            {open ? <Logo /> : <LogoIcon />}
-            <div className="mt-8 flex flex-col gap-2 text-gray-800 dark:text-gray-200">
-              {sidebarLinks.map((link) => (
-                <SidebarLink 
-                  key={link.id} 
-                  link={link} 
-                  onClick={() => handleLinkClick(link.id)}
-                  active={activeContent === link.id}
-                />
-              ))}
-            </div>
+    <div className="flex h-screen bg-gray-50 dark:bg-neutral-900">
+      {/* Sidebar */}
+      <div 
+        className={cn(
+          "fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800",
+          "transform transition-transform duration-300 ease-in-out",
+          "lg:relative lg:transform-none",
+          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
+      >
+        <div className="flex flex-col h-full p-6">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-8 w-8 bg-black dark:bg-white rounded-lg" />
+            <span className="text-lg font-medium">ComponentCraft</span>
           </div>
-          <div className="flex flex-col gap-2 text-gray-800 dark:text-gray-200">
-            <div className={`flex gap-2 ${!open && 'flex-col'}`}>
-                <Button variant="outline" size="icon" onClick={toggleDarkMode} className="border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500">
-                    {darkModeState ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                </Button>
-                <Button variant='destructive' onClick={() => {logout()}}>
-                    <IconLogout className="h-5 w-5 flex-shrink-0" />
-                    {open && 'Logout'}
-                </Button>
-            </div>
-            <SidebarLink
-              link={{
-                id: "profile",
-                label: (profile && profile.displayName) || '',
-                icon: <UserAvatar />
-              }}
-              onClick={() => handleLinkClick("profile")}
-              active={activeContent === "profile"}
-            />
-          </div>
-        </SidebarBody>
-      </Sidebar>
-      <main className="flex-1 p-6 overflow-auto">
-        <nav>
 
-        </nav>
-        {renderContent(activeContent)}
-      </main>
+          {/* Navigation */}
+          <nav className="space-y-1 flex-1">
+            {sidebarLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => setActiveContent(link.id)}
+                className={cn(
+                  "flex items-center gap-3 w-full px-4 py-3 text-sm font-medium rounded-lg",
+                  "transition-colors duration-200",
+                  activeContent === link.id
+                    ? "bg-gray-100 dark:bg-neutral-800 text-black dark:text-white"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-900"
+                )}
+              >
+                {link.icon}
+                {link.label}
+              </button>
+            ))}
+          </nav>
+
+          {/* Credits Section */}
+          <div className="border-t border-gray-200 dark:border-neutral-800 pt-6 mt-6">
+            <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium">Credits Remaining</span>
+                <IconBolt className="h-4 w-4" />
+              </div>
+              <div className="text-2xl font-bold mb-2">2,450</div>
+              <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
+                <div className="bg-black dark:bg-white h-2 rounded-full" style={{ width: '70%' }} />
+              </div>
+              <Button 
+                className="w-full mt-3 bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                onClick={() => navigate('/billing')}
+              >
+                Add Credits
+              </Button>
+            </div>
+          </div>
+
+          {/* User Section */}
+          <div className="border-t border-gray-200 dark:border-neutral-800 pt-6 mt-6">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-neutral-800" />
+              <div className="flex-1">
+                <div className="font-medium">{profile?.displayName}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Pro Plan</div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
+                {darkModeState ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <header className="sticky top-0 z-10 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm border-b border-gray-200 dark:border-neutral-800">
+          <div className="flex items-center justify-between px-6 h-16">
+            <h1 className="text-xl font-medium">{getPageTitle(activeContent)}</h1>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" onClick={() => window.open('/docs', '_blank')}>
+                Documentation
+              </Button>
+              <Button 
+                className="bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                onClick={() => navigate('/new-project')}
+              >
+                New Project
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <main className="p-6">
+          {renderContent(activeContent)}
+        </main>
+      </div>
     </div>
   );
 };
 
-const Logo = () => (
-    <div className="font-normal flex space-x-2 items-center text-sm text-gray-800 dark:text-gray-200 py-1 relative z-20">
-        <div className="h-5 w-6 bg-gray-800 dark:bg-gray-200 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-        <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="font-medium whitespace-pre"
-        >
-        Startup Name
-        </motion.span>
-</div>
-);
-
-const LogoIcon = () => (
-<div className="font-normal flex space-x-2 items-center text-sm text-gray-800 dark:text-gray-200 py-1 relative z-20">
-    <div className="h-5 w-6 bg-gray-800 dark:bg-gray-200 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-</div>
-);
-
-const UserAvatar = () => (
-<div className="h-7 w-7 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-600" />
-);
-
 const sidebarLinks = [
-{
+  {
     id: "home",
     label: "Dashboard",
-    icon: <IconHome className="h-5 w-5 flex-shrink-0" />
-},
-{
+    icon: <IconHome className="h-5 w-5" />,
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    icon: <IconBolt className="h-5 w-5" />,
+  },
+  {
+    id: "billing",
+    label: "Billing",
+    icon: <IconCreditCard className="h-5 w-5" />,
+  },
+  {
     id: "profile",
     label: "Profile",
-    icon: <IconUser className="h-5 w-5 flex-shrink-0" />
-},
-{
+    icon: <IconUser className="h-5 w-5" />,
+  },
+  {
     id: "settings",
     label: "Settings",
-    icon: <IconSettings className="h-5 w-5 flex-shrink-0" />
-},
-{
-    id: "logout",
-    label: "Logout",
-    icon: <IconLogout className="h-5 w-5 flex-shrink-0" />
-}
+    icon: <IconSettings className="h-5 w-5" />,
+  },
 ];
+
+const getPageTitle = (contentId: string) => {
+  const link = sidebarLinks.find(link => link.id === contentId);
+  return link?.label || 'Dashboard';
+};
 
 const renderContent = (contentId: string) => {
   switch (contentId) {
