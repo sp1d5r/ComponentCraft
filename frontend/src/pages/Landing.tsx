@@ -3,8 +3,11 @@ import { Button } from "../components/shadcn/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/shadcn/card";
 import { Badge } from "../components/shadcn/badge";
 import LandingLayout from "../layouts/LandingLayout";
+import { AuthStatus, useAuth } from "../contexts/AuthenticationProvider";
 
 export const Landing: React.FC = () => {
+  const {authState} = useAuth();
+
   return (
     <LandingLayout>
       <div className="flex flex-col gap-8">   
@@ -17,7 +20,15 @@ export const Landing: React.FC = () => {
             <p className="text-lg md:text-xl mb-12 text-gray-700 dark:text-gray-300 font-light max-w-2xl mx-auto">
               Elevate your design system with meticulously crafted components that blend form and function in perfect harmony.
             </p>
-            <Button className="rounded-none border border-black dark:border-white bg-black text-white dark:bg-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white transition-all duration-300 px-8 py-6 text-lg">
+            <Button
+             onClick={()=> {
+              if (authState.status === AuthStatus.AUTHENTICATED) {
+                window.location.href="/dashboard"
+              } else {
+                window.location.href="/authentication"
+              }
+             }}
+             className="rounded-none border border-black dark:border-white bg-black text-white dark:bg-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white transition-all duration-300 px-8 py-6 text-lg">
               Explore Collection
             </Button>
             
