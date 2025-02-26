@@ -6,64 +6,52 @@ import { motion } from 'framer-motion';
 
 export const DashboardMain: React.FC = () => {
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8 px-4">
       {/* Welcome Section */}
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div>
-          <h1 className="text-3xl font-light text-black dark:text-white">Welcome back</h1>
+          <h1 className="text-2xl sm:text-3xl font-light text-black dark:text-white">Welcome back</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-2">Transform your designs into production-ready components</p>
         </div>
         <Button 
-          className="bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+          className="w-full sm:w-auto bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
           onClick={() => {/* Handle new project */}}
         >
-          <Plus className="w-4 h-4 mr-2" />
-          New Project
+          <Plus className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">New Project</span>
         </Button>
       </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="p-6 border border-gray-200 dark:border-neutral-800 hover:border-gray-400 dark:hover:border-neutral-600 transition-all duration-300">
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
-              <div className="h-12 w-12 bg-black dark:bg-white rounded-lg flex items-center justify-center">
-                <Sparkles className="h-6 w-6 text-white dark:text-black" />
-              </div>
-              <h3 className="text-lg font-medium text-black dark:text-white">Start from Template</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Choose from our curated collection of pre-built design systems
-              </p>
-            </div>
-            <ArrowRight className="h-5 w-5 text-gray-400" />
-          </div>
-        </Card>
+        <QuickActionCard
+          icon={<Sparkles className="h-6 w-6 text-white dark:text-black" />}
+          title="Start from Template"
+          description="Choose from our curated collection of pre-built design systems"
+          onClick={() => {/* Handle action */}}
+        />
 
-        <Card className="p-6 border border-gray-200 dark:border-neutral-800 hover:border-gray-400 dark:hover:border-neutral-600 transition-all duration-300">
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
-              <div className="h-12 w-12 bg-black dark:bg-white rounded-lg flex items-center justify-center">
-                <Image className="h-6 w-6 text-white dark:text-black" />
-              </div>
-              <h3 className="text-lg font-medium text-black dark:text-white">Upload Designs</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Extract components from your existing UI screenshots
-              </p>
-            </div>
-            <ArrowRight className="h-5 w-5 text-gray-400" />
-          </div>
-        </Card>
+        <QuickActionCard
+          icon={<Image className="h-6 w-6 text-white dark:text-black" />}
+          title="Upload Designs"
+          description="Extract components from your existing UI screenshots"
+          onClick={() => {/* Handle action */}}
+        />
       </div>
 
       {/* Recent Projects */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-medium text-black dark:text-white">Recent Projects</h2>
-          <Button variant="ghost" className="text-sm text-gray-500">View all</Button>
+          <Button variant="ghost" size="icon" className="sm:hidden">
+            <ArrowRight className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" className="hidden sm:flex text-sm text-gray-500">
+            View all
+          </Button>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Example Project Card */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <ProjectCard 
             name="Mobile Banking App"
             components={24}
@@ -71,24 +59,18 @@ export const DashboardMain: React.FC = () => {
             thumbnail="/project-thumbnail.jpg"
           />
           
-          {/* New Project Card */}
-          <Card className="aspect-[4/3] flex items-center justify-center border border-dashed border-gray-200 dark:border-neutral-800 hover:border-gray-400 dark:hover:border-neutral-600 transition-all duration-300">
-            <Button variant="ghost" className="flex flex-col gap-2">
-              <Plus className="h-8 w-8 text-gray-400" />
-              <span className="text-sm text-gray-500">Create New Project</span>
-            </Button>
-          </Card>
+          <NewProjectCard />
         </div>
       </div>
 
-      {/* AI Processing Status */}
-      <Card className="p-6 border border-gray-200 dark:border-neutral-800">
+      {/* AI Processing Status - Simplified for mobile */}
+      <Card className="p-4 sm:p-6 border border-gray-200 dark:border-neutral-800">
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-full border-2 border-t-black dark:border-t-white border-gray-200 dark:border-neutral-800 animate-spin" />
-          <div>
-            <h3 className="text-lg font-medium text-black dark:text-white">AI Processing</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Analyzing components and generating design system for "Mobile Banking App"
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full border-2 border-t-black dark:border-t-white border-gray-200 dark:border-neutral-800 animate-spin" />
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg font-medium text-black dark:text-white truncate">AI Processing</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+              Analyzing components for "Mobile Banking App"
             </p>
           </div>
         </div>
@@ -129,3 +111,43 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ name, components, lastUpdated
     </Card>
   );
 };
+// New component for Quick Action Cards
+interface QuickActionCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  onClick: () => void;
+}
+
+const QuickActionCard: React.FC<QuickActionCardProps> = ({ icon, title, description, onClick }) => (
+  <Card 
+    className="p-4 sm:p-6 border border-gray-200 dark:border-neutral-800 hover:border-gray-400 dark:hover:border-neutral-600 transition-all duration-300 cursor-pointer"
+    onClick={onClick}
+  >
+    <div className="flex items-start gap-4 sm:gap-0 sm:justify-between">
+      <div className="flex items-center sm:block gap-4 sm:gap-0 sm:space-y-2">
+        <div className="h-10 w-10 sm:h-12 sm:w-12 bg-black dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+          {icon}
+        </div>
+        <div>
+          <h3 className="text-base sm:text-lg font-medium text-black dark:text-white">{title}</h3>
+          <p className="hidden sm:block text-sm text-gray-500 dark:text-gray-400">
+            {description}
+          </p>
+        </div>
+      </div>
+      <ArrowRight className="hidden sm:block h-5 w-5 text-gray-400" />
+    </div>
+  </Card>
+);
+
+// New component for New Project Card
+const NewProjectCard: React.FC = () => (
+  <Card className="aspect-[4/3] flex items-center justify-center border border-dashed border-gray-200 dark:border-neutral-800 hover:border-gray-400 dark:hover:border-neutral-600 transition-all duration-300">
+    <Button variant="ghost" className="flex flex-col gap-2">
+      <Plus className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
+      <span className="text-xs sm:text-sm text-gray-500">Create New Project</span>
+    </Button>
+  </Card>
+);
+

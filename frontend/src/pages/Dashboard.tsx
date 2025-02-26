@@ -9,6 +9,8 @@ import {
   IconLogout,
   IconCreditCard,
   IconBolt,
+  IconMenu,
+  IconX,
 } from "@tabler/icons-react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "../components/shadcn/button";
@@ -79,15 +81,55 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-neutral-900">
-      {/* Sidebar */}
+      {/* Mobile Menu Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-6 left-6 z-50 lg:hidden"
+        onClick={() => setOpen(true)}
+      >
+        <IconMenu className="h-6 w-6 text-black dark:text-white" />
+      </Button>
+
+      {/* Mobile Header */}
+      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-6 bg-gray-50 dark:bg-neutral-900 lg:hidden z-40">
+        <div className="w-6" /> {/* Spacer for menu button */}
+        <span className="text-2xl font-normal text-black dark:text-white">Dashboard</span>
+        <Button 
+          className="bg-black text-white dark:bg-white dark:text-black rounded-xl"
+          onClick={() => navigate('/new-project')}
+        >
+          New Project
+        </Button>
+      </div>
+
+      {/* Sidebar with overlay for mobile */}
+      <div 
+        className={cn(
+          "fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden",
+          open ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+        onClick={() => setOpen(false)}
+      />
+      
       <div 
         className={cn(
           "fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-neutral-950 border-r border-gray-200 dark:border-neutral-800",
-          "transform transition-transform duration-300 ease-in-out",
+          "transform transition-transform duration-300 ease-in-out z-50",
           "lg:relative lg:transform-none",
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
+        {/* Close button for mobile */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 lg:hidden"
+          onClick={() => setOpen(false)}
+        >
+          <IconX className="h-6 w-6" />
+        </Button>
+        
         <div className="flex flex-col h-full p-6">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-8">
@@ -152,8 +194,9 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <header className="sticky top-0 z-10 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm border-b border-gray-200 dark:border-neutral-800">
+      <div className="flex-1 overflow-auto pt-24 lg:pt-0">
+        {/* Desktop Header */}
+        <header className="hidden lg:block sticky top-0 z-10 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm border-b border-gray-200 dark:border-neutral-800">
           <div className="flex items-center justify-between px-6 h-16">
             <h1 className="text-xl font-medium text-black dark:text-white">{getPageTitle(activeContent)}</h1>
             <div className="flex items-center gap-3">
