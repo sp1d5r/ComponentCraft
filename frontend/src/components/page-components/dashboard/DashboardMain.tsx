@@ -3,8 +3,14 @@ import { Button } from "../../shadcn/button";
 import { Card } from "../../shadcn/card";
 import { Plus, Layers, Sparkles, Image, Component, ArrowRight } from "lucide-react";
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export const DashboardMain: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleNewProject = () => {
+    navigate('/new-project');
+  };
   return (
     <div className="max-w-6xl mx-auto space-y-8 px-4">
       {/* Welcome Section */}
@@ -15,7 +21,7 @@ export const DashboardMain: React.FC = () => {
         </div>
         <Button 
           className="w-full sm:w-auto bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-          onClick={() => {/* Handle new project */}}
+          onClick={() => {handleNewProject()}}
         >
           <Plus className="w-4 h-4 sm:mr-2" />
           <span className="hidden sm:inline">New Project</span>

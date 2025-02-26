@@ -1,4 +1,3 @@
-
 export interface ApiResponse<T> {
   data: T;
   message: string;
@@ -14,3 +13,4 @@ export * from './types/Article';
 export * from './types/User';
 export * from './types/UserProfile';
 export * from './types/Plans';
+export * from './types/Project';

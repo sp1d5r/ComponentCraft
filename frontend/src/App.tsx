@@ -15,6 +15,7 @@ import { ArticlePage } from './pages/ArticlePage';
 import { ProfileProvider } from './contexts/ProfileProvider';
 import Onboarding from './pages/Onboarding';
 import NotFound from './pages/NotFound';
+import { NewProject } from './pages/NewProject';
 
 // Example components for different routes
 const About = () => <ScrollableLayout><h2>About Page</h2></ScrollableLayout>;
@@ -47,6 +48,9 @@ function App() {
 
                   {/* Main Page */}
                   <Route path="/dashboard" element={<Dashboard />} />
+
+                  {/* New Project */}
+                  <Route path="/new-project" element={<NewProject />} />
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>
