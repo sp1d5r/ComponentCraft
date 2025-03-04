@@ -477,31 +477,9 @@ export const NewProject: React.FC = () => {
                   Arrange your screens into user flows
                 </p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Screen Library */}
-                  <div className="lg:col-span-1 space-y-4">
-                    <h2 className="text-xl font-medium text-black dark:text-white">
-                      Available Screens
-                    </h2>
-                    <div className="border border-gray-200 dark:border-neutral-800 rounded-lg p-4">
-                      <DndContext onDragEnd={handleDragEnd}>
-                        <SortableContext items={uploadedScreens}>
-                          <div className="space-y-2">
-                            {uploadedScreens.map((screen) => (
-                              <SortableScreen 
-                                key={screen.id} 
-                                screen={screen}
-                                onClick={() => addScreenToFlow(screen.id, 'main')}
-                              />
-                            ))}
-                          </div>
-                        </SortableContext>
-                      </DndContext>
-                    </div>
-                  </div>
-
+                <div className="grid grid-cols-1">
                   {/* Flow Builder */}
-                  <div className="lg:col-span-2 space-y-4">
+                  <div className="lg:col-span-1 space-y-4">
                     <div className="flex items-center justify-between">
                       <h2 className="text-xl font-medium text-black dark:text-white">
                         Flow Builder
@@ -520,6 +498,9 @@ export const NewProject: React.FC = () => {
                           screens={uploadedScreens}
                           onUpdate={updateFlow}
                           onDelete={deleteFlow}
+                          availableScreens={uploadedScreens.filter(screen => 
+                            !flow.screens.some(s => s.screenId === screen.id)
+                          )}
                         />
                       ))}
                     </div>

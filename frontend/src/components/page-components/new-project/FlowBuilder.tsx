@@ -49,6 +49,8 @@ interface FlowBuilderProps {
   };
   screens: Screen[];
   onUpdate: (flowId: string, updatedFlow: any) => void;
+  onDelete?: (flowId: string) => void;
+  availableScreens?: Screen[];
 }
 
 const nodeTypes = {
@@ -59,6 +61,8 @@ export const FlowBuilder: React.FC<FlowBuilderProps> = ({
   flow,
   screens,
   onUpdate,
+  onDelete,
+  availableScreens = screens,
 }) => {
   const [showPreview, setShowPreview] = useState(false);
   const [selectedScreen, setSelectedScreen] = useState<string>(screens[0]?.id || '');
@@ -206,12 +210,15 @@ export const FlowBuilder: React.FC<FlowBuilderProps> = ({
     [flow, onUpdate]
   );
 
-  const handleAddScreen = () => {
-    if (!selectedScreen || screens.length === 0) return;
+  const handleAddScreen = (screenId = selectedScreen) => {
+    if (!screenId || screens.length === 0) return;
+    
+    // Check if this screen is already in the flow
+    if (flow.screens.some(s => s.screenId === screenId)) return;
     
     const newScreen = {
       id: `screen-${Math.random().toString(36).substr(2, 9)}`,
-      screenId: selectedScreen,
+      screenId: screenId,
       position: { 
         x: Math.random() * 300 + 50, 
         y: Math.random() * 300 + 50 
@@ -255,7 +262,7 @@ export const FlowBuilder: React.FC<FlowBuilderProps> = ({
   return (
     <Card className="border border-gray-200 dark:border-neutral-800">
       <div className="p-4 space-y-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between">
           <div className="flex-1 space-y-2">
             <Input
               value={flow.name}
@@ -271,100 +278,129 @@ export const FlowBuilder: React.FC<FlowBuilderProps> = ({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <Select value={selectedScreen} onValueChange={setSelectedScreen}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a screen" />
-                </SelectTrigger>
-                <SelectContent>
-                  {screens.map(screen => (
-                    <SelectItem key={screen.id} value={screen.id}>
-                      {screen.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                variant="outline"
-                onClick={handleAddScreen}
-                disabled={!selectedScreen || screens.length === 0}
-              >
-                <Plus size={16} className="mr-2" />
-                Add Screen
-              </Button>
-            </div>
             <Button
               onClick={() => setShowPreview(true)}
             >
               <Eye size={16} className="mr-2" />
               Preview
             </Button>
+            {onDelete && (
+              <Button
+                variant="outline"
+                onClick={() => onDelete(flow.id)}
+                className="text-red-500 hover:text-red-600"
+              >
+                <Trash2 size={16} className="mr-2" />
+                Delete Flow
+              </Button>
+            )}
           </div>
         </div>
 
-        <div className="h-[600px] border rounded-lg">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onNodeDragStop={onNodeDragStop}
-            nodeTypes={nodeTypes}
-            fitView
-            deleteKeyCode={['Delete', 'Backspace']}
-          >
-            <Background />
-            <Controls />
-            <Panel position="top-right" className="bg-white dark:bg-gray-800 p-2 rounded shadow-md">
-              <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-medium">Flow Builder Help</span>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-5 w-5">
-                        <HelpCircle size={14} />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80 p-3">
-                      <div className="space-y-2">
-                        <h4 className="font-medium">Icon Legend</h4>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                          <div className="flex items-center gap-2">
-                            <Flag size={14} className="text-green-500" />
-                            <span>Start screen</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Flag size={14} className="text-gray-500" />
-                            <span>Set as start screen</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Trash2 size={14} className="text-gray-500" />
-                            <span>Delete screen</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Plus size={14} className="text-gray-500" />
-                            <span>Add screen</span>
-                          </div>
-                        </div>
-                        <h4 className="font-medium mt-2">Keyboard Shortcuts</h4>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                          <div className="flex items-center gap-2">
-                            <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">Delete</kbd>
-                            <span>Remove selected connection</span>
-                          </div>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          {/* Available Screens Panel */}
+          <div className="lg:col-span-1 border rounded-lg p-3 bg-gray-50 dark:bg-gray-900">
+            <h3 className="text-sm font-medium mb-3">Available Screens</h3>
+            <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2">
+              {availableScreens.map(screen => (
+                <div 
+                  key={screen.id}
+                  className="border rounded-md p-2 bg-white dark:bg-gray-800 cursor-pointer hover:border-gray-400 transition-colors"
+                  onClick={() => {
+                    // Check if screen is already in the flow
+                    if (!flow.screens.some(s => s.screenId === screen.id)) {
+                      handleAddScreen(screen.id);
+                    }
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                      {screen.url && (
+                        <img 
+                          src={screen.url} 
+                          alt={screen.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
+                    <span className="truncate text-sm">{screen.name}</span>
+                  </div>
                 </div>
-                <p>• Drag to connect screens</p>
-                <p>• <Flag size={14} className="inline text-green-500" /> indicates start screen</p>
-                <p>• Delete key removes connections</p>
-                <p>• Drag screens to reposition</p>
-              </div>
-            </Panel>
-          </ReactFlow>
+              ))}
+              {availableScreens.length === 0 && (
+                <div className="text-sm text-gray-500 dark:text-gray-400 text-center p-4">
+                  No screens available
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Flow Builder */}
+          <div className="lg:col-span-3 h-[500px] border rounded-lg">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onNodeDragStop={onNodeDragStop}
+              nodeTypes={nodeTypes}
+              fitView
+              deleteKeyCode={['Delete', 'Backspace']}
+            >
+              <Background />
+              <Controls />
+              <Panel position="top-right" className="bg-white dark:bg-gray-800 p-2 rounded shadow-md">
+                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-medium">Flow Builder Help</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-5 w-5">
+                          <HelpCircle size={14} />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 p-3">
+                        <div className="space-y-2">
+                          <h4 className="font-medium">Icon Legend</h4>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="flex items-center gap-2">
+                              <Flag size={14} className="text-green-500" />
+                              <span>Start screen</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Flag size={14} className="text-gray-500" />
+                              <span>Set as start screen</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Trash2 size={14} className="text-gray-500" />
+                              <span>Delete screen</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Plus size={14} className="text-gray-500" />
+                              <span>Add screen</span>
+                            </div>
+                          </div>
+                          <h4 className="font-medium mt-2">Keyboard Shortcuts</h4>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="flex items-center gap-2">
+                              <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">Delete</kbd>
+                              <span>Remove selected connection</span>
+                            </div>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <p>• Click screens from the left to add them</p>
+                  <p>• Drag to connect screens</p>
+                  <p>• <Flag size={14} className="inline text-green-500" /> indicates start screen</p>
+                  <p>• Delete key removes connections</p>
+                  <p>• Drag screens to reposition</p>
+                </div>
+              </Panel>
+            </ReactFlow>
+          </div>
         </div>
       </div>
 
