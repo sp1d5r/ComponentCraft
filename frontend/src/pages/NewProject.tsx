@@ -11,14 +11,14 @@ import { ScrollArea } from '../components/shadcn/scroll-area';
 import { 
   DesignTemplate, 
   ScreenFlow, 
-  DetectedComponent 
+  DetectedComponent,
+  ScreenNode,
+  DesignComponent,
+  DesignTokens
 } from 'shared';
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import { SortableContext, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { SortableScreen } from '../components/page-components/new-project/SortableScreen';
 import { FlowBuilder } from '../components/page-components/new-project/FlowBuilder';
 import { ComponentDetectionPreview } from '../components/page-components/new-project/ComponentDetectionPreview';
+import { DragEndEvent } from '@dnd-kit/core';
 
 type CreationStep = 
   | 'selection'      // Initial choice
@@ -46,67 +46,13 @@ interface ProjectData {
   detectedComponents: DetectedComponent[];
 }
 
-// Add these functions before the component
-const mockDetectedComponents: Record<string, DetectedComponent[]> = {};
-
-const getDetectedComponents = (screenId: string): DetectedComponent[] => {
-  // Mock component detection - in reality this would come from an API
-  if (mockDetectedComponents[screenId]) {
-    return mockDetectedComponents[screenId];
-  }
-
-  const components: DetectedComponent[] = [
-    {
-      id: `button-${screenId}`,
-      name: 'Primary Button',
-      type: 'button',
-      boundingBox: {
-        x: 20,
-        y: 30,
-        width: 15,
-        height: 8
-      },
-      confidence: 0.95,
-      screenId,
-      preview: '/mock-component.png',
-      similarComponents: []
-    },
-    {
-      id: `card-${screenId}`,
-      name: 'Content Card',
-      type: 'card',
-      boundingBox: {
-        x: 10,
-        y: 45,
-        width: 80,
-        height: 30
-      },
-      confidence: 0.88,
-      screenId,
-      preview: '/mock-component.png',
-      similarComponents: []
-    }
-  ];
-
-  mockDetectedComponents[screenId] = components;
-  return components;
-};
-
-// Move these inside the component
-const [detectedComponents, setDetectedComponents] = useState<DetectedComponent[]>([]);
-
-const handleComponentSelect = (component: DetectedComponent, approved: boolean) => {
-  setDetectedComponents(prev => [
-    ...prev.filter(c => c.id !== component.id),
-    { ...component, approved }
-  ]);
-};
-
-// Add this interface near the top with other interfaces
-interface ScreenNode {
+interface TemplateCard extends Omit<DesignTemplate, 'components'> {
   id: string;
-  screenId: string;
-  position?: { x: number; y: number };
+  name: string;
+  description: string;
+  preview: string;
+  components: DesignComponent[];
+  styles: DesignTokens;
 }
 
 export const NewProject: React.FC = () => {
@@ -134,6 +80,60 @@ export const NewProject: React.FC = () => {
     screens: [],
     connections: []
   }]);
+
+  const mockDetectedComponents: Record<string, DetectedComponent[]> = {};
+
+  const getDetectedComponents = (screenId: string): DetectedComponent[] => {
+    // Mock component detection - in reality this would come from an API
+    if (mockDetectedComponents[screenId]) {
+      return mockDetectedComponents[screenId];
+    }
+
+    const components: DetectedComponent[] = [
+      {
+        id: `button-${screenId}`,
+        name: 'Primary Button',
+        type: 'button',
+        boundingBox: {
+          x: 20,
+          y: 30,
+          width: 15,
+          height: 8
+        },
+        confidence: 0.95,
+        screenId,
+        preview: '/mock-component.png',
+        similarComponents: []
+      },
+      {
+        id: `card-${screenId}`,
+        name: 'Content Card',
+        type: 'card',
+        boundingBox: {
+          x: 10,
+          y: 45,
+          width: 80,
+          height: 30
+        },
+        confidence: 0.88,
+        screenId,
+        preview: '/mock-component.png',
+        similarComponents: []
+      }
+    ];
+
+    mockDetectedComponents[screenId] = components;
+    return components;
+  };
+
+  const [detectedComponents, setDetectedComponents] = useState<DetectedComponent[]>([]);
+
+  const handleComponentSelect = (component: DetectedComponent, approved: boolean) => {
+    setDetectedComponents(prev => [
+      ...prev.filter(c => c.id !== component.id),
+      { ...component, approved }
+    ]);
+  };
 
   const handleFileUpload = (files: FileList | null) => {
     if (!files) return;
@@ -321,7 +321,7 @@ export const NewProject: React.FC = () => {
                     <ScrollArea className="h-[400px] rounded-md border border-gray-200 dark:border-neutral-800">
                       <div className="p-4 space-y-4">
                         {templates.map((template) => (
-                          <TemplateCard
+                          <TemplateCardComponent
                             key={template.id}
                             template={template}
                             isSelected={projectData.template?.id === template.id}
@@ -621,28 +621,25 @@ const getProgressWidth = (step: CreationStep): string => {
   }
 };
 
-interface TemplateCard extends DesignTemplate {
-  id: string;
-  name: string;
-  description: string;
-  preview: string;
-  components: number;
-  styles: Record<string, any>;
-}
-
 const templates: TemplateCard[] = [
   {
     id: 'minimal',
     name: 'Minimal UI',
     description: 'Clean, modern interface with essential components',
     preview: '/templates/minimal.png',
-    components: 24,
-    styles: {}
+    components: [],
+    styles: {
+      colors: [],
+      typography: [],
+      spacing: [],
+      borderRadius: [],
+      shadows: []
+    }
   },
   // ... more templates
 ];
 
-const TemplateCard: React.FC<{
+const TemplateCardComponent: React.FC<{
   template: TemplateCard;
   isSelected: boolean;
   onSelect: () => void;
@@ -670,7 +667,7 @@ const TemplateCard: React.FC<{
       {template.description}
     </p>
     <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-      {template.components} components
+      {template.components.length} components
     </div>
   </Card>
 ); 
