@@ -92,19 +92,22 @@ const getDetectedComponents = (screenId: string): DetectedComponent[] => {
   return components;
 };
 
+// Move these inside the component
+const [detectedComponents, setDetectedComponents] = useState<DetectedComponent[]>([]);
+
 const handleComponentSelect = (component: DetectedComponent, approved: boolean) => {
-  // In reality, this would update the component status in your state/backend
-  console.log('Component', component.id, approved ? 'approved' : 'rejected');
-  
-  // Update projectData with the component decision
-  setProjectData(prev => ({
-    ...prev,
-    detectedComponents: [
-      ...prev.detectedComponents.filter(c => c.id !== component.id),
-      { ...component, approved }
-    ]
-  }));
+  setDetectedComponents(prev => [
+    ...prev.filter(c => c.id !== component.id),
+    { ...component, approved }
+  ]);
 };
+
+// Add this interface near the top with other interfaces
+interface ScreenNode {
+  id: string;
+  screenId: string;
+  position?: { x: number; y: number };
+}
 
 export const NewProject: React.FC = () => {
   const navigate = useNavigate();
@@ -179,17 +182,17 @@ export const NewProject: React.FC = () => {
     }
   };
 
+  // Update the addScreenToFlow function
   const addScreenToFlow = (screenId: string, flowId: string) => {
     const newFlows = [...flows];
     const flowIndex = newFlows.findIndex(f => f.id === flowId);
     if (flowIndex !== -1) {
-      const newScreens = [...newFlows[flowIndex].screens, {
-        id: screenId,
-        name: uploadedScreens.find(s => s.id === screenId)?.name || '',
-        url: uploadedScreens.find(s => s.id === screenId)?.url || '',
-        order: newFlows[flowIndex].screens.length
-      }];
-      newFlows[flowIndex].screens = newScreens;
+      const newScreenNode: ScreenNode = {
+        id: Math.random().toString(36).substr(2, 9),
+        screenId: screenId,
+        position: { x: 0, y: 0 }
+      };
+      newFlows[flowIndex].screens = [...newFlows[flowIndex].screens, newScreenNode];
       setFlows(newFlows);
     }
   };
@@ -618,12 +621,13 @@ const getProgressWidth = (step: CreationStep): string => {
   }
 };
 
-interface TemplateCard {
+interface TemplateCard extends DesignTemplate {
   id: string;
   name: string;
   description: string;
   preview: string;
   components: number;
+  styles: Record<string, any>;
 }
 
 const templates: TemplateCard[] = [
@@ -632,7 +636,8 @@ const templates: TemplateCard[] = [
     name: 'Minimal UI',
     description: 'Clean, modern interface with essential components',
     preview: '/templates/minimal.png',
-    components: 24
+    components: 24,
+    styles: {}
   },
   // ... more templates
 ];

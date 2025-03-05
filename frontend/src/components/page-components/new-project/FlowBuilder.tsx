@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -22,11 +22,26 @@ import { PreviewModal } from './PreviewModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../shadcn/select';
 import { Popover, PopoverContent, PopoverTrigger } from '../../shadcn/popover';
 import { HelpCircle } from 'lucide-react';
+import { SelectArea } from './SelectArea';
+import { PlusCircle } from 'lucide-react';
 
 interface Screen {
   id: string;
   name: string;
   url: string;
+}
+
+interface FlowConnection {
+  id: string;
+  from: string;
+  to: string;
+  label?: string;
+  interactionArea?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 }
 
 interface FlowBuilderProps {
@@ -39,12 +54,7 @@ interface FlowBuilderProps {
       screenId: string;
       position?: { x: number; y: number };
     }>;
-    connections: Array<{
-      id: string;
-      from: string;
-      to: string;
-      label?: string;
-    }>;
+    connections: FlowConnection[];
     startScreenId?: string;
   };
   screens: Screen[];
@@ -52,10 +62,6 @@ interface FlowBuilderProps {
   onDelete?: (flowId: string) => void;
   availableScreens?: Screen[];
 }
-
-const nodeTypes = {
-  screenNode: ScreenNode,
-};
 
 export const FlowBuilder: React.FC<FlowBuilderProps> = ({
   flow,
@@ -67,6 +73,8 @@ export const FlowBuilder: React.FC<FlowBuilderProps> = ({
   const [showPreview, setShowPreview] = useState(false);
   const [selectedScreen, setSelectedScreen] = useState<string>(screens[0]?.id || '');
   const [startScreenNode, setStartScreenNode] = useState<string | null>(null);
+  const [selectingArea, setSelectingArea] = useState<string | null>(null);
+  const [showQuickAdd, setShowQuickAdd] = useState<string | null>(null);
   
   // Convert flow screens to ReactFlow nodes
   const initialNodes: Node[] = flow.screens.map((screen) => ({
@@ -146,41 +154,88 @@ export const FlowBuilder: React.FC<FlowBuilderProps> = ({
 
   const onConnect = useCallback(
     (params: Connection) => {
-      // Create a unique ID for the new edge
       const newEdgeId = `edge-${Math.random().toString(36).substr(2, 9)}`;
-      
-      // Create the new edge with arrow marker
-      const newEdge = { 
-        ...params, 
+      const newEdge = {
+        ...params,
         id: newEdgeId,
-        type: 'smoothstep', // Makes the line curved
-        animated: true, // Optional: adds animation to the line
-        style: { stroke: '#999' }, // Line color
-        markerEnd: { 
+        type: 'smoothstep',
+        animated: true,
+        style: { stroke: '#999' },
+        markerEnd: {
           type: MarkerType.Arrow,
           width: 20,
           height: 20
         }
       };
 
-      // Add the edge to ReactFlow's state
       setEdges((eds) => addEdge(newEdge, eds));
       
-      // Update the flow with new connection
       const newConnection = {
         id: newEdgeId,
         from: params.source || '',
         to: params.target || '',
-        label: 'Navigate' // Optional: you can add a label to the connection
+        label: 'Navigate'
       };
-      
+
       onUpdate(flow.id, {
         ...flow,
         connections: [...flow.connections, newConnection],
       });
+
+      if (window.confirm('Would you like to select an interaction area for this connection?')) {
+        setSelectingArea(newEdgeId);
+      }
     },
     [flow, onUpdate, setEdges]
   );
+
+  const handleAreaSelected = useCallback((edgeId: string, area: { x: number, y: number, width: number, height: number }) => {
+    const updatedConnections = flow.connections.map(conn => {
+      if (conn.id === edgeId) {
+        return {
+          ...conn,
+          interactionArea: area
+        };
+      }
+      return conn;
+    });
+
+    onUpdate(flow.id, {
+      ...flow,
+      connections: updatedConnections
+    });
+    
+    setSelectingArea(null);
+  }, [flow, onUpdate]);
+
+  const handleQuickAddScreen = useCallback((sourceNodeId: string) => {
+    const newScreenId = `screen-${Math.random().toString(36).substr(2, 9)}`;
+    const sourceNode = nodes.find(n => n.id === sourceNodeId);
+    
+    if (!sourceNode) return;
+
+    const newPosition = {
+      x: (sourceNode.position?.x || 0) + 250,
+      y: (sourceNode.position?.y || 0)
+    };
+
+    const newScreen = {
+      id: newScreenId,
+      screenId: selectedScreen,
+      position: newPosition
+    };
+
+    onUpdate(flow.id, {
+      ...flow,
+      screens: [...flow.screens, newScreen],
+      connections: [...flow.connections, {
+        id: `edge-${Math.random().toString(36).substr(2, 9)}`,
+        from: sourceNodeId,
+        to: newScreenId,
+        label: 'Navigate'
+      }]
+    });
+  }, [flow, nodes, selectedScreen, onUpdate]);
 
   const handleNameChange = (name: string) => {
     onUpdate(flow.id, { ...flow, name });
@@ -258,6 +313,23 @@ export const FlowBuilder: React.FC<FlowBuilderProps> = ({
       document.removeEventListener('keydown', onEdgeDelete);
     };
   }, [edges, handleEdgeDelete]);
+
+  // Move nodeTypes inside component to access handleQuickAddScreen
+  const nodeTypes = useMemo(() => ({
+    screenNode: (props: any) => (
+      <div className="relative">
+        <ScreenNode {...props} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute -right-8 top-1/2 transform -translate-y-1/2"
+          onClick={() => handleQuickAddScreen(props.id)}
+        >
+          <PlusCircle size={20} />
+        </Button>
+      </div>
+    ),
+  }), [handleQuickAddScreen]);
 
   return (
     <Card className="border border-gray-200 dark:border-neutral-800">
@@ -412,6 +484,14 @@ export const FlowBuilder: React.FC<FlowBuilderProps> = ({
           }}
           screens={screens}
           onClose={() => setShowPreview(false)}
+        />
+      )}
+
+      {selectingArea && (
+        <SelectArea
+          edgeId={selectingArea}
+          onAreaSelected={handleAreaSelected}
+          onCancel={() => setSelectingArea(null)}
         />
       )}
     </Card>
