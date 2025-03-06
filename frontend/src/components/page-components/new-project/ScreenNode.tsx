@@ -25,7 +25,7 @@ export const ScreenNode: React.FC<ScreenNodeProps> = ({ data, isConnectable }) =
     <Card className="p-3 min-w-[200px] max-w-[300px] shadow-md border border-gray-200 dark:border-gray-700">
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         isConnectable={isConnectable}
         className="w-3 h-3 bg-blue-500"
       />
@@ -99,7 +99,7 @@ export const ScreenNode: React.FC<ScreenNodeProps> = ({ data, isConnectable }) =
       
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         isConnectable={isConnectable}
         className="w-3 h-3 bg-blue-500"
       />
